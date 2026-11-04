@@ -1,0 +1,25 @@
+name: Coverage analysis
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Code coverage
+        run: |
+          coverage run --source=calculator -m pytest CodeCoverageTest_calculator.py
+          coverage report -m
+      - name: Branch coverage
+        if: ${{ hashFiles('BranchCoverageTest_calculator.py') != '' }}
+        run: |
+          coverage run --branch --source=calculator -m pytest BranchCoverageTest_calculator.py
+          coverage report -m
